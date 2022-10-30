@@ -1,0 +1,17 @@
+# lab2A总结
+
+总的来说，这一个lab是让我们实现chfs系统的persistency
+
+对于Part1部分，它需要我们完成对于chfs-command的记录与持久化，也就是把我们extend_server中的各种操作按照执行顺序记录到log中，以防止我们因为crush而造成指令丢失。
+
+每次执行create、put等指令就在log中进行记录，每一次chfs的重启我们也从log中读取指令信息并进行复现。
+
+但是由于我lab1的symbol link不太行，只能拿到除symbol link之外的分数
+
+对于Part2部分，需要我们完成all or nothing的设定，也就是说对于一个事务transaction而言，要么执行整个，要么不执行。所以我们引入了create和commit两个部分，只有一个事务commit了我们才认为这个事务执行完了，要不然就是nothing。在我们crush之后的复现中，如果发现没有commit指令，则我们不给复现。
+
+对于Part3部分，我们要用checkpoint来模拟磁盘。因为在实际的chfs中，每一个事务已经执行完就会被写入磁盘，这意味着这些执行完的事务们是不会受crush影响的，而在我们的lab中这一点做不到，所以需要我们用checkpoint来模拟磁盘，logdata来模拟缓存。换句话说，checkpoint记录了我们完成的所有事务，logdata只记录了我们未完成的事务。logdata每有一次commit就移入checkpoint中，并且自己清空。
+
+
+
+以上谨代表个人见解，不一定正确，且代码也有偷懒不妥之处（比如logdata的信息处理部分），但还是拿到了symbol link以外所有的分数嘿嘿。
